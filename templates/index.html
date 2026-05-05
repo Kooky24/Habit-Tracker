@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <section class="page-actions">
+    <div class="page-intro">
+      <h2>Habit dashboard</h2>
+      <p>Monitor streaks, weekly progress, and habit momentum in one clean view.</p>
+    </div>
+    <a class="button primary" href="{{ url_for('create_habit') }}">Add habit</a>
+  </section>
+
+  {% if habits %}
+    <div class="grid">
+      {% for habit in habits %}
+        <article class="habit-card">
+          <div class="habit-header">
+            <div class="habit-headline">
+              <h2>{{ habit.name }}</h2>
+              <div class="habit-meta">
+                <span class="habit-tag">{{ habit.category }}</span>
+                <span class="habit-created">Created {{ habit.created_at }}</span>
+              </div>
+            </div>
+            <form action="{{ url_for('complete_habit', habit_id=habit.id) }}" method="post">
+              <button class="button small">Mark complete</button>
+            </form>
+          </div>
+
+          <p class="description">{{ habit.description }}</p>
+          <div class="stat-row">
+            <div><strong>Current streak</strong><span>{{ habit.current_streak }}</span></div>
+            <div><strong>Best streak</strong><span>{{ habit.best_streak }}</span></div>
+          </div>
+
+          <div class="progress-label">Weekly progress</div>
+          <div class="weekly-progress">
+            {% for item in habit.weekly_progress %}
+              <div class="day {{ 'done' if item.completed else '' }}" title="{{ item.date }}">
+                {{ item.date[-2:] }}
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="actions-row">
+            <a class="button secondary" href="{{ url_for('edit_habit', habit_id=habit.id) }}">Edit</a>
+            <form action="{{ url_for('delete_habit', habit_id=habit.id) }}" method="post" class="inline-form">
+              <button class="button danger">Delete</button>
+            </form>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <section class="empty-state">
+      <h2>No habits yet</h2>
+      <p>Add your first habit to begin tracking streaks and weekly progress.</p>
+      <a class="button primary" href="{{ url_for('create_habit') }}">Create a habit</a>
+    </section>
+  {% endif %}
+{% endblock %}
